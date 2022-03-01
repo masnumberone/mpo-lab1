@@ -23,7 +23,7 @@
 
 # dSYM files
 *.dSYM
-*.app.dSYM
+*app.dSYM
 
 # Fortran module files
 *.mod
