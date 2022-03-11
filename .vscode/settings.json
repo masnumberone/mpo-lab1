@@ -67,7 +67,9 @@
         "list": "cpp",
         "stack": "cpp",
         "iostream": "cpp",
-        "__availability": "cpp"
+        "__availability": "cpp",
+        "map": "cpp",
+        "__tree": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -14,4 +14,7 @@ struct Date {
     std::string getDate();
     bool setTime(std::string &);
     bool setDate(std::string &);
+
+    friend bool operator<(Date, Date);
+    friend bool operator>(Date, Date);
 };
