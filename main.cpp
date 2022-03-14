@@ -24,7 +24,7 @@ void startProgram() {
             std::cin.clear();
             while (std::cin.get() != '\n');
             key = -1;
-            system("cls");
+            system("clear");
             std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
             continue;
         }
@@ -36,6 +36,12 @@ void startProgram() {
         }
         case 1: {
             system("clear");
+
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
 
             std::map <int, std::string> channels;
             channels[0] = tvProgram.get(0).channel;
@@ -169,6 +175,13 @@ void startProgram() {
         }
         case 2: {
             system("clear");
+
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
+
             tvProgram.print();
             std::cout  << std::endl << "Для выхода в главное меню, введите любое значение." << std::endl << ">>> ";
             std::cin >> key;
@@ -182,6 +195,11 @@ void startProgram() {
         }
         case 3: {
             system("clear");
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
             while (key != -1) {
                 if (tvProgram.isSortedChannel()) std::cout << "Записи отсортированы по каналам." << std::endl;
                 else if (tvProgram.isSortedProgram()) std::cout << "Записи отсортированы по программам." << std::endl;
@@ -274,8 +292,12 @@ void startProgram() {
 
             std::cout << "Ввод параметров записи." << std::endl << std::endl << "Канал: ";
             std::cin >> channel;
+            while (std::cin.peek() != '\n')
+                channel = channel + (char)std::cin.get();
             std::cout << "Программа: ";
             std::cin >> program;
+            while (std::cin.peek() != '\n')
+                program = program + (char)std::cin.get();
             std::cout << "Дата начала: ";
             std::cin >> strStartDate;
             while (!start.setDate(strStartDate)) {
@@ -305,7 +327,259 @@ void startProgram() {
             key = -1;
             break;
         }
-       
+        case 5: {
+            system("clear");
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
+            while (key != -1) {
+                key = tvProgram.printIndex();
+                if (key == -1) {
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = 0;
+                    continue;
+                }
+
+                if (key == 0) {
+                    system("clear");
+                    key = -1;
+                    break;
+                }
+
+                if ((key > 0) && (key <= tvProgram.size())) {
+                    system("clear");
+                    Telecast tmp = tvProgram.get(key - 1);
+                    int number = key;
+                    key = -1;
+                    while (key == -1) {
+                        std::cout << "Выберите параметр, который необходимо изменить:" << std::endl << std::endl
+                            << "[1] Канал: " << tmp.channel << std::endl 
+                            << "[2] Программа: " << tmp.program << std::endl 
+                            << "[3] Время начала: " << tmp.startTime.getTime() << std::endl 
+                            << "[4] Дата начала: " << tmp.startTime.getDate() << std::endl << std::endl 
+                            << "[0] В главное меню"  << std::endl << std::endl << ">>> ";
+
+                        std::cin >> key;
+
+                        if (std::cin.get() != '\n') {
+                            std::cin.clear();
+                            while (std::cin.get() != '\n');
+                            system("clear");
+                            std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                            key = -1;
+                            continue;
+                        }
+
+                        if (key == 0) {
+                            system("clear");
+                            key = -1;
+                            break;
+                        }
+
+                        if ((key > 0) && (key <= 4)) {
+                            system("clear");
+                            std::string strBuffer;
+                            std::cout << "Ввведите новое значение параметра ";
+                            if (key == 1) {
+                                std::cout << "\"Канал\":" << std::endl << std::endl << ">>> ";
+                                std::cin >> strBuffer;
+                                while (std::cin.peek() != '\n')
+                                    strBuffer = strBuffer + (char)std::cin.get();
+                                tvProgram.setChannel(number - 1, strBuffer);                                
+                            }
+                            else if (key == 2) {
+                                std::cout << "\"Программа\":" << std::endl << std::endl << ">>> ";
+                                std::cin >> strBuffer;
+                                while (std::cin.peek() != '\n')
+                                    strBuffer = strBuffer + (char)std::cin.get();
+                                tvProgram.setProgram(number - 1, strBuffer);
+                            }
+                            else if (key == 3) {
+                                std::cout << "\"Время начала\":" << std::endl << std::endl << ">>> ";
+                                std::cin >> strBuffer;
+                                Date startTime;
+                                while (!startTime.setTime(strBuffer)) {
+                                    system("clear");
+                                    std::cout << "Время введено не корректно. Используйте формат ЧЧ:ММ" << std::endl << std::endl
+                                        << "Ввведите новое значение па раметра " << std::endl << "\"Время начала\":" << std::endl << std::endl << ">>> ";
+                                    std::cin >> strBuffer;
+                                }
+                                startTime.setDate(tvProgram.get(number - 1).startTime.getDate());
+                                tvProgram.setStartTime(number - 1 , startTime);
+                             }
+
+                            else {
+                                std::cout << "\"Дата начала\":" << std::endl << std::endl << ">>> ";
+                                std::cin >> strBuffer;
+                                Date startTime;
+                                while (!startTime.setDate(strBuffer)) {
+                                    system("clear");
+                                    std::cout << "Дата введена не корректно. Используйте формат ДД.ММ.ГГГГ" << std::endl << std::endl
+                                        << "Ввведите новое значение параметра " << std::endl << "\"Дата начала\":" << std::endl << std::endl << ">>> ";
+                                    std::cin >> strBuffer;
+                                }
+                                startTime.setTime(tvProgram.get(number - 1).startTime.getTime());
+                                tvProgram.setStartTime(number - 1, startTime);
+                            }                            
+                            system("clear");
+                            tvProgram.save();
+                            std::cout << "Изменения успешно внесены." << std::endl << std::endl;
+                        }
+                        else {
+                            system("clear");
+                            std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                            key = -1;
+                            continue;
+                        }
+                    }
+                    key = -1;
+                }
+                else {
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = 0;
+                }               
+            }
+            key = -1;
+            break;
+       }
+        case 6: {
+            system("clear");
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
+            while (key != -1) {
+                key = tvProgram.printIndex();
+                if (key == -1) {
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = 0;
+                    continue;
+                }
+
+                if (key == 0) {
+                    system("clear");
+                    key = -1;
+                    break;
+                }
+
+                if ((key > 0) && (key <= tvProgram.size())) {
+                    system("clear");
+                    int number = key;
+                    key = -1;
+                    while (key == -1) {
+                        std::cout << "Вы действително желаете удалить выбранную запись?" << std::endl << std::endl
+                            << tvProgram.get(number - 1) << std::endl << std::endl
+                            << "[1] Да, удалить эту запись" << std::endl 
+                            << "[2] Нет, выбрать другую запись" << std::endl << std::endl
+                            << "[0] В главное меню"  << std::endl << std::endl << ">>> ";
+
+                        std::cin >> key;
+                        if (std::cin.get() != '\n') {
+                            std::cin.clear();
+                            while (std::cin.get() != '\n');
+                            system("clear");
+                            std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                            key = -1;
+                            continue;
+                        }
+
+                        if (key == 0) {
+                            system("clear");
+                            key = -1;
+                            break;
+                        }
+
+                        if (key == 1) {
+                            tvProgram.erase(number - 1);
+                            system("clear");
+                            tvProgram.save();
+                            std::cout << "Запись успешно удалена." << std::endl << std::endl;
+                            key = -1;
+                            break;
+                        }
+                        else if (key == 2) {
+                            system("clear");
+                            key = -2;
+                            break;
+                        }
+                        else {
+                            system("clear");
+                            std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                            key = -1;
+                            continue;
+                        }
+                    }
+                }
+                else {
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = 0;
+                }
+            }
+            key = -1;
+            break;
+        }
+        case 7: {
+            system("clear");
+            if (tvProgram.isEmpty()) {
+                std::cout << "Список телепрограмм пуст." << std::endl << std::endl;
+                key = -1;
+                break;
+            }
+            key = -1;
+
+            while (key == -1) {
+                std::cout << "Удалить все записи? Я зря всю эту телепрогамму для тебя писал? Ну спасибо." 
+                    << std::endl << "Может мы и папку System заодно удалим??" << std::endl << std::endl
+                    << "[1] Нет, удалить только все записи" << std::endl 
+                    << "[2] Да, удаляй. Буду газетой пользоваться" << std::endl << std::endl
+                    << "[0] В главное меню"  << std::endl << std::endl << ">>> ";
+
+                std::cin >> key;
+                if (std::cin.get() != '\n') {
+                    std::cin.clear();
+                    while (std::cin.get() != '\n');
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = -1;
+                    continue;
+                }
+
+                if (key == 0) {
+                    system("clear");
+                    key = -1;
+                    break;
+                }
+
+                if (key == 1) {
+                    tvProgram.clear();
+                    system("clear");
+                    tvProgram.save();
+                    std::cout << "Все записи успешно удалены." << std::endl << std::endl;
+                    key = -1;
+                    break;
+                }
+                else if (key == 2) {
+                    system("clear");
+                    std::cout << "Извини, но газеты уже запрещены)" << std::endl << std::endl;
+                    key = -1;
+                    break;
+                }
+                else {
+                    system("clear");
+                    std::cout << "Ошибка ввода. Введите число повторно." << std::endl;
+                    key = -1;
+                    continue;
+                }
+            }
+            break;
+        }
         default: {
             key = -1;
             system("clear");
@@ -318,11 +592,5 @@ void startProgram() {
 
 int main() {
     startProgram();
-
-    // Schedule tv;
-    // tv.load();
-    // tv.sortTime();
-    // tv.save();
-    
     return 1;
 }

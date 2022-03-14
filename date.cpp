@@ -49,7 +49,7 @@ std::string Date::getDate() {
     return outDay + "." + outMounth + "." + std::to_string(year);
 }
 
-bool Date::setTime(std::string& str) {
+bool Date::setTime(std::string str) {
     if (str.size() != 5) return false;
     bool checkFormat = false;
     for (char c : str) {
@@ -64,7 +64,7 @@ bool Date::setTime(std::string& str) {
     return false;
 }
 
-bool Date::setDate(std::string& str) {
+bool Date::setDate(std::string str) {
     if (str.size() != 10) return false;
     int countPoint = 0;
     for (char c : str) {

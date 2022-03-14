@@ -7,6 +7,6 @@ Telecast::Telecast(std::string channel, std::string program, Date startTime) {
 }
 
 std::ostream& operator<<(std::ostream& out, Telecast telecast) {
-    out << telecast.channel << ": " << telecast.program << " " << telecast.startTime.getTime() << ")\n";
+    out << telecast.startTime.getTime() << " (" << telecast.startTime.getDate() << ") " << telecast.channel << ": " << telecast.program  << std::endl;
     return out; 
 }

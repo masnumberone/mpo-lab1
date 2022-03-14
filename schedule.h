@@ -17,14 +17,20 @@ public:
     ~Schedule();
     void add(Telecast);
     void add(std::string, std::string, Date);                              //
+    void clear();
     bool erase(int);                                                       // удалить по номеру, начало - 0
     Telecast get(int);                                                     // номер в списке
     bool load();
+    bool isEmpty();
     bool isSortedChannel();
     bool isSortedProgram();
     bool isSortedTime();
     void print();
+    int printIndex();
     bool save();
+    void setChannel(int, std::string);
+    void setProgram(int, std::string);
+    void setStartTime(int, Date);
     void sortChannel(bool = true);                                          // false - в обратном порядке
     void sortProgram(bool = true);
     void sortTime(bool = true);

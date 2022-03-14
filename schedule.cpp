@@ -24,15 +24,19 @@ void Schedule::add(std::string channel, std::string program, Date startTime) {
 bool Schedule::erase(int n) {
     if (scheduleList.empty()) return false;
     auto it = scheduleList.begin();
-    for (int i = 0; i < n; i++) it++;
+    std::advance(it, n);
     scheduleList.erase(it);
     return true;
+}
+
+void Schedule::clear() {
+    scheduleList.clear();
 }
 
 Telecast Schedule::get(int n) {
     std::list<Telecast>::iterator it = scheduleList.begin();
     
-    for (int i = 0; i < n; i++) it++;
+    std::advance(it, n);
     return *it;
 }
 
@@ -100,6 +104,10 @@ bool Schedule::load() {
     return fileCorrect;
 }
 
+bool Schedule::isEmpty() {
+    return scheduleList.empty();
+}
+
 bool Schedule::isSortedChannel() {
     return sorting == 1;
 }
@@ -123,13 +131,6 @@ void Schedule::print() {
         } 
     }
     else if (isSortedProgram()) {
-        // std::string program = (*scheduleList.begin()).program;
-        // for (Telecast tmp : scheduleList) {
-        //     if (program != tmp.program) std::cout << std::endl << tmp.program << ":" << std::endl;
-        //     std::cout << tmp.channel << " " << tmp.startTime.getTime() << "-" << tmp.endTime.getTime() << std::endl;
-        //     program = tmp.program;
-        // }
-
         std::string program = (*scheduleList.begin()).program;
         std::cout << program  << ":" << std::endl;
         for (Telecast tmp : scheduleList) {
@@ -158,6 +159,57 @@ void Schedule::print() {
     }
 }
 
+int Schedule::printIndex() {
+    std::cout << "Выберите запись, которую необходимо изменить:" << std::endl << std::endl;
+    int n = 1;
+    if (isSortedTime()) {
+        std::string date = (*scheduleList.begin()).startTime.getDate();
+        std::cout << date << ":" << std::endl;
+        for (Telecast tmp : scheduleList) {
+            if (date != tmp.startTime.getDate()) std::cout << std::endl << tmp.startTime.getDate() << ":" << std::endl;
+            std::cout << "[" << n++ << "]" << " " << tmp.startTime.getTime() << " [" << tmp.channel << "] " << tmp.program << std::endl;
+            date = tmp.startTime.getDate();
+        }
+    }
+    else if (isSortedProgram()) {
+        std::string program = (*scheduleList.begin()).program;
+        std::cout << program << ":" << std::endl;
+        for (Telecast tmp : scheduleList) {
+            if (program != tmp.program) std::cout << std::endl << tmp.program << ":" << std::endl;
+            std::cout << "[" << n++ << "]" << "  " << tmp.startTime.getTime() << " (" << tmp.startTime.getDate() << ") " << tmp.channel << std::endl;
+            program = tmp.program;
+        }
+    }
+    else if (isSortedChannel()) {
+        std::string channel = (*scheduleList.begin()).channel;
+        std::string date = (*scheduleList.begin()).startTime.getDate();
+        std::cout << channel << ":" << std::endl << "     [" << date << "]" << std::endl;
+        for (Telecast tmp : scheduleList) {
+            if (channel != tmp.channel) {
+                std::cout << std::endl << tmp.channel << ": " << std::endl << "     [" << tmp.startTime.getDate() << "]" << std::endl
+                    << "[" << n++ << "]" << "  " << tmp.startTime.getTime() << " " << tmp.program << std::endl;
+            }
+            else if (date != tmp.startTime.getDate()) {
+                std::cout << std::endl << "     [" << tmp.startTime.getDate() << "]" << std::endl << "[" << n++ << "]" << "  " << tmp.startTime.getTime()
+                    << " " << tmp.program << std::endl;
+            }
+            else std::cout << "[" << n++ << "]" << "  " << tmp.startTime.getTime() << " " << tmp.program << std::endl;
+            channel = tmp.channel;
+            date = tmp.startTime.getDate();
+        }
+    }
+
+    int index;
+    std::cout << std::endl << "[0] В главное меню" << std::endl << std::endl << ">>> ";
+    std::cin >> index;
+    if (std::cin.get() != '\n') {
+        std::cin.clear();
+        while (std::cin.get() != '\n');
+        index = -1;
+    }
+    return index;
+}
+
 bool Schedule::save() {
     std::ofstream file("DATA.txt");
     if (!file.is_open()) return false;
@@ -169,6 +221,33 @@ bool Schedule::save() {
     }
     file.close();
     return true;
+}
+
+void Schedule::setChannel(int n, std::string channel) {
+    auto it = scheduleList.begin();
+    std::advance(it, n);
+    (*it).channel = channel;
+    if (isSortedChannel()) sortChannel(sortAscending);
+    else if (isSortedProgram()) sortProgram(sortAscending);
+    else sortTime(sortAscending);
+}
+
+void Schedule::setProgram(int n, std::string program) {
+    auto it = scheduleList.begin();
+    std::advance(it, n);
+    (*it).program = program;
+    if (isSortedChannel()) sortChannel(sortAscending);
+    else if (isSortedProgram()) sortProgram(sortAscending);
+    else sortTime(sortAscending);
+}
+
+void Schedule::setStartTime(int n, Date startTime) {
+    auto it = scheduleList.begin();
+    std::advance(it, n);
+    (*it).startTime = startTime;
+    if (isSortedChannel()) sortChannel(sortAscending);
+    else if (isSortedProgram()) sortProgram(sortAscending);
+    else sortTime(sortAscending);
 }
 
 void Schedule::sortChannel(bool ascending) {
